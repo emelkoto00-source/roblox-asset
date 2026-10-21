@@ -1,0 +1,608 @@
+{
+  "pack": "EST V4 Cinematic Particle Collection",
+  "total_particle_presets": 15,
+  "none_preset": "unchanged",
+  "image_format": "transparent RGBA PNG",
+  "effects": [
+    {
+      "effect": "Sparkles",
+      "title": "Celestial Diamonds",
+      "folder": "01_Sparkles",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "01_Sparkles/02_Animated_SpriteSheets/01_Sparkles_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "01_Sparkles/02_Animated_SpriteSheets/02_Sparkles_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Hearts",
+      "title": "Roseglass Bloom",
+      "folder": "02_Hearts",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "02_Hearts/02_Animated_SpriteSheets/01_Hearts_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "02_Hearts/02_Animated_SpriteSheets/02_Hearts_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Snow",
+      "title": "Crystal Blizzard",
+      "folder": "03_Snow",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "03_Snow/02_Animated_SpriteSheets/01_Snow_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "03_Snow/02_Animated_SpriteSheets/02_Snow_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Embers",
+      "title": "Phoenix Cinders",
+      "folder": "04_Embers",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "04_Embers/02_Animated_SpriteSheets/01_Embers_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "04_Embers/02_Animated_SpriteSheets/02_Embers_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Bubbles",
+      "title": "Liquid Prism",
+      "folder": "05_Bubbles",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "05_Bubbles/02_Animated_SpriteSheets/01_Bubbles_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "05_Bubbles/02_Animated_SpriteSheets/02_Bubbles_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Orbit",
+      "title": "Astral Satellites",
+      "folder": "06_Orbit",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "06_Orbit/02_Animated_SpriteSheets/01_Orbit_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "06_Orbit/02_Animated_SpriteSheets/02_Orbit_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Petals",
+      "title": "Sakura Tempest",
+      "folder": "07_Petals",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "07_Petals/02_Animated_SpriteSheets/01_Petals_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "07_Petals/02_Animated_SpriteSheets/02_Petals_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Confetti",
+      "title": "Holographic Celebration",
+      "folder": "08_Confetti",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "08_Confetti/02_Animated_SpriteSheets/01_Confetti_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "08_Confetti/02_Animated_SpriteSheets/02_Confetti_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Lightning",
+      "title": "Storm Cage",
+      "folder": "09_Lightning",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "09_Lightning/02_Animated_SpriteSheets/01_Lightning_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "09_Lightning/02_Animated_SpriteSheets/02_Lightning_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Smoke",
+      "title": "Spectral Mist",
+      "folder": "10_Smoke",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "10_Smoke/02_Animated_SpriteSheets/01_Smoke_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "10_Smoke/02_Animated_SpriteSheets/02_Smoke_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Shooting Stars",
+      "title": "Meteor Crossing",
+      "folder": "11_Shooting_Stars",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "11_Shooting_Stars/02_Animated_SpriteSheets/01_ShootingStars_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "11_Shooting_Stars/02_Animated_SpriteSheets/02_ShootingStars_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Pixel",
+      "title": "Digital Dissolve",
+      "folder": "12_Pixel",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "12_Pixel/02_Animated_SpriteSheets/01_Pixel_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "12_Pixel/02_Animated_SpriteSheets/02_Pixel_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Music",
+      "title": "Resonance Symphony",
+      "folder": "13_Music",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "13_Music/02_Animated_SpriteSheets/01_Music_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "13_Music/02_Animated_SpriteSheets/02_Music_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Waves",
+      "title": "Tidal Halo",
+      "folder": "14_Waves",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "14_Waves/02_Animated_SpriteSheets/01_Waves_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "14_Waves/02_Animated_SpriteSheets/02_Waves_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    },
+    {
+      "effect": "Fireflies",
+      "title": "Enchanted Wisps",
+      "folder": "15_Fireflies",
+      "particle_assets": 8,
+      "animation_frame_count": 16,
+      "sprite_sheets": [
+        {
+          "mode": "BURST",
+          "path": "15_Fireflies/02_Animated_SpriteSheets/01_Fireflies_BURST_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": false
+        },
+        {
+          "mode": "LOOP",
+          "path": "15_Fireflies/02_Animated_SpriteSheets/02_Fireflies_LOOP_SPRITESHEET_4X4_16FRAMES_1024.png",
+          "grid": [
+            4,
+            4
+          ],
+          "cell_size": [
+            256,
+            256
+          ],
+          "frame_count": 16,
+          "loop": true
+        }
+      ],
+      "recommended_usage": "Standalone transparent particles + BURST one-shot + seamless ambient LOOP",
+      "alpha_background": "transparent",
+      "frame_order": "row-major, left-right, top-bottom"
+    }
+  ]
+}

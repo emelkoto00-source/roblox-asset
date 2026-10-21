@@ -1,0 +1,10 @@
+import { randomBytes, scryptSync } from 'node:crypto';
+import { createInterface } from 'node:readline/promises';
+const rl = createInterface({ input: process.stdin, output: process.stdout });
+const password = await rl.question('Dashboard password (input visible): ');
+rl.close();
+if (password.length < 14) throw new Error('Use at least 14 characters');
+const salt = randomBytes(16).toString('hex');
+const hash = scryptSync(password, Buffer.from(salt, 'hex'), 64).toString('hex');
+console.log(`APP_PASSWORD_HASH=${salt}:${hash}`);
+console.log(`SESSION_SECRET=${randomBytes(32).toString('hex')}`);
