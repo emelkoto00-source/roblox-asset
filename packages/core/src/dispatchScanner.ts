@@ -3,6 +3,7 @@ import type { Selection } from './config';
 import type { ScanResult } from './scanner';
 import { scanParticleZip } from './scanner';
 import { scanCreativeZip } from './creativeScanner';
+import { scanSignatureZip, SIGNATURE_PACK } from './signatureScanner';
 
 async function readPackName(buffer:Buffer):Promise<string> {
   return new Promise((resolve,reject)=>{
@@ -36,10 +37,11 @@ async function readPackName(buffer:Buffer):Promise<string> {
 }
 export async function scanESTZip(buffer:Buffer,mode:Selection):Promise<ScanResult>{
   const name=await readPackName(buffer);
+  if(name===SIGNATURE_PACK) return scanSignatureZip(buffer,mode);
   if(name==='EST Creative Name Accents + Level Identities V3') return scanCreativeZip(buffer,mode);
   if(name==='EST V4 Cinematic Particle Collection') {
     const result=await scanParticleZip(buffer,mode);
     return {...result,packType:'particle_v4'};
   }
-  throw new Error('Unsupported asset collection. Select the original EST Particle V4 ZIP or Name Accents + Level Identities V3 ZIP.');
+  throw new Error('Unsupported asset collection. Choose Particle V4, Creative V3, or Name Signature V1 ZIP.');
 }

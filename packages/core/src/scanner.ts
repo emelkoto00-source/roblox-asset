@@ -2,10 +2,10 @@ import yauzl from 'yauzl';
 import { createHash } from 'node:crypto';
 
 export type ScannedAsset = {
-  effect: string; kind: 'particle'|'main'|'motif'|'burst_sheet'|'loop_sheet'|'burst_frame'|'loop_frame';
+  effect: string; kind: 'particle'|'main'|'motif'|'burst_sheet'|'loop_sheet'|'burst_frame'|'loop_frame'|`sig_${string}`;
   path: string; data: Buffer; sha256: string;
 };
-export type ScanResult = { manifest: any; assets: ScannedAsset[]; counts: Record<string,number>; allPngCount: number; packType?: 'particle_v4'|'creative_v3' };
+export type ScanResult = { manifest: any; assets: ScannedAsset[]; counts: Record<string,number>; allPngCount: number; packType?: 'particle_v4'|'creative_v3'|'signature_v1' };
 const MAX_ENTRIES = 900;
 const MAX_UNCOMPRESSED = 120_000_000;
 const MAX_SINGLE_FILE = 12_000_000;

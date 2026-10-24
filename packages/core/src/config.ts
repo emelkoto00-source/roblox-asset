@@ -3,7 +3,7 @@ export function required(key: string): string {
   if (!value) throw new Error(`Missing required environment variable: ${key}`);
   return value;
 }
-export const checkedMaxZipBytes = () => Math.min(50_000_000, Math.max(1_000_000, Number(process.env.MAX_ZIP_BYTES || 50_000_000)));
+export const checkedMaxZipBytes = () => Math.min(110_000_000, Math.max(1_000_000, Number(process.env.MAX_ZIP_BYTES || 110_000_000)));
 export type Ownership = 'user'|'group';
 export type Selection = 'essential'|'all'|'frames';
 export const VALID_MODES: Selection[] = ['essential','all','frames'];
