@@ -7,7 +7,8 @@ export const dynamic='force-dynamic';
 export async function GET(request:Request){
   const deny=await guard(request);if(deny)return deny;
   const {rows}=await db().query(`SELECT b.*, (SELECT COUNT(*)::int FROM assets a WHERE a.batch_id=b.id) AS count,
-  (SELECT COUNT(*)::int FROM assets a WHERE a.batch_id=b.id AND a.status='created') AS created
+  (SELECT COUNT(*)::int FROM assets a WHERE a.batch_id=b.id AND a.status='created') AS created,
+  (SELECT CASE WHEN EXISTS (SELECT 1 FROM assets a WHERE a.batch_id=b.id AND a.rel_path LIKE 'Name_Accents/%') THEN 'creative_v3' ELSE 'particle_v4' END) AS pack_type
   FROM batches b ORDER BY b.created_at DESC LIMIT 20`);
   return NextResponse.json({batches:rows});
 }
@@ -20,7 +21,7 @@ export async function POST(request:Request){
     const owner=String(form.get('owner')||'user');
     if(!VALID_MODES.includes(mode as any))throw new Error('Invalid selection mode');
     if(owner!=='user' && owner!=='group')throw new Error('Invalid owner');
-    if(!(file instanceof File)||!file.name.toLowerCase().endsWith('.zip'))throw new Error('Please upload the EST V4 ZIP');
+    if(!(file instanceof File)||!file.name.toLowerCase().endsWith('.zip'))throw new Error('Please select an EST asset collection ZIP');
     if(file.size>checkedMaxZipBytes())throw new Error('ZIP exceeds upload size limit');
     const buffer=Buffer.from(await file.arrayBuffer());
     const scan=await scanESTZip(buffer,mode as any);
@@ -43,6 +44,6 @@ export async function POST(request:Request){
       for(const a of stored)await client.query(`INSERT INTO assets(id,batch_id,effect,kind,rel_path,storage_key,sha256,status) VALUES($1,$2,$3,$4,$5,$6,$7,'staged')`,[a.id,batchId,a.effect,a.kind,a.path,a.key,a.hash]);
       await client.query('COMMIT');
     }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
-    return NextResponse.json({id:batchId,owner,ownerId,mode,count:stored.length,summary:scan.counts,readyToStart:true},{status:201});
+    return NextResponse.json({id:batchId,owner,ownerId,mode,packType:scan.packType,count:stored.length,summary:scan.counts,readyToStart:true},{status:201});
   }catch(e){return failure(e)}
 }
