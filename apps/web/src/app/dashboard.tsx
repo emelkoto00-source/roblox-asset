@@ -4,7 +4,7 @@ type Batch = {id:string,filename:string,mode:string,status:string,owner_type:str
 type Asset = {id:string,effect:string,kind:string,rel_path:string,status:string,asset_id?:string,error_text?:string};
 type Detail = {batch:Batch,counts:Record<string,number>,total:number,assets:Asset[]};
 const effects=['Sparkles','Hearts','Snow','Embers','Bubbles','Orbit','Petals','Confetti','Lightning','Smoke','Shooting Stars','Pixel','Music','Waves','Fireflies'];
-const creativeStyles=['Aurora Wings','Sakura Constellation','Prismatic Shards','Phoenix Flight','Moonlit Dream','Holographic Cubes','Seraph Feathers','Spectral Wisps','Enchanted Grove','Nebula Crystals','Clockwork Halo','Tidal Spirits'];
+const creativeStyles=['Aurora Wings','Sakura Constellation','Prismatic Crystals','Phoenix Feathers','Moonlit Dream','Cyber Rift','Seraph Wings','Phantom Wisps','Enchanted Garden','Dreamclouds','Clockwork Stars','Tidal Spirits'];
 export default function Dashboard(){
  const [file,setFile]=useState<File|null>(null),[mode,setMode]=useState('essential'),[owner,setOwner]=useState('user'),[collection,setCollection]=useState<'particle_v4'|'creative_v3'>('particle_v4');
  const [batches,setBatches]=useState<Batch[]>([]),[active,setActive]=useState<string|null>(null),[detail,setDetail]=useState<Detail|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
