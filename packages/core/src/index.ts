@@ -11,3 +11,6 @@ export * from './creativeExport';
 
 export * from './signatureScanner';
 export * from './signatureExport';
+
+export * from './artifactScanner';
+export * from './artifactExport';

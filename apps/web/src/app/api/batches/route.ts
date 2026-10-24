@@ -9,6 +9,7 @@ export async function GET(request:Request){
   const {rows}=await db().query(`SELECT b.*, (SELECT COUNT(*)::int FROM assets a WHERE a.batch_id=b.id) AS count,
   (SELECT COUNT(*)::int FROM assets a WHERE a.batch_id=b.id AND a.status='created') AS created,
   (SELECT CASE
+    WHEN EXISTS (SELECT 1 FROM assets a WHERE a.batch_id=b.id AND a.rel_path LIKE 'Identity_Artifacts/%') THEN 'artifacts_v1'
     WHEN EXISTS (SELECT 1 FROM assets a WHERE a.batch_id=b.id AND a.rel_path LIKE 'Cinematic_Reveals/%') THEN 'signature_v1'
     WHEN EXISTS (SELECT 1 FROM assets a WHERE a.batch_id=b.id AND a.rel_path LIKE 'Name_Accents/%') THEN 'creative_v3'
     ELSE 'particle_v4' END) AS pack_type
