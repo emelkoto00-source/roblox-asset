@@ -8,3 +8,6 @@ export * from './roblox';
 
 export * from './dispatchScanner';
 export * from './creativeExport';
+
+export * from './signatureScanner';
+export * from './signatureExport';
