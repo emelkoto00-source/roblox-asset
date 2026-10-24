@@ -2,15 +2,25 @@
   "name": "est-roblox-asset-cloud",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
-  "engines": {"node": ">=22"},
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "npm run build -w @est/web",
     "dev": "npm run dev -w @est/web",
     "start:web": "npm run start -w @est/web",
     "start:worker": "npm run start -w @est/worker",
     "db:init": "tsx scripts/init-db.ts",
-    "make:password": "node scripts/make-password.mjs"
+    "make:password": "node scripts/make-password.mjs",
+    "test:artifact": "node --import tsx --test tests/artifact-frame-kinds.test.ts"
   },
-  "devDependencies": {"tsx": "^4.20.0", "typescript": "^5.8.3", "@types/node": "^22.15.0"}
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3",
+    "@types/node": "^22.15.0"
+  }
 }

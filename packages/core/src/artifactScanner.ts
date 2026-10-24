@@ -10,6 +10,10 @@ const ANIMATIONS = ['IDLE','REVEAL','REACTION'] as const;
 const MAX_ENTRIES=350,MAX_EXPANDED=120_000_000,MAX_SINGLE=8_000_000;
 type Spec = {name:string;kind:string;sha256:string};
 
+export function isNumberedArtifactAnimationFrame(kind:string):boolean{
+  return ANIMATIONS.some(animation=>kind===animation+'_FRAME');
+}
+
 function normalized(path:string){
   if(!path || path.startsWith('/') || path.includes('\\') || path.includes('\0') ||
     path.split('/').some(segment=>segment==='.'||segment==='..'))throw new Error('Unsafe ZIP path');
@@ -80,7 +84,9 @@ function manifestFiles(m:any):Map<string,Spec>{
       expectedEntry.name!==entry.style || expectedEntry.sha256){
       throw new Error('Unexpected or duplicate artifact asset declaration: '+entry.path);
     }
-    if(entry.kind.endsWith('_FRAME')){
+    // LEVEL_FRAME is a static level-decoration PNG, not a numbered animation frame.
+    // Only IDLE_FRAME, REVEAL_FRAME, and REACTION_FRAME require a frame index.
+    if(isNumberedArtifactAnimationFrame(entry.kind)){
       const frame=Number(entry.path.match(/_FRAME_(\d{2})\.png$/)?.[1]);
       if(entry.frame!==frame)throw new Error('Frame number mismatch: '+entry.path);
     }
