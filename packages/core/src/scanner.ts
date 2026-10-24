@@ -2,10 +2,10 @@ import yauzl from 'yauzl';
 import { createHash } from 'node:crypto';
 
 export type ScannedAsset = {
-  effect: string; kind: 'particle'|'burst_sheet'|'loop_sheet'|'burst_frame'|'loop_frame';
+  effect: string; kind: 'particle'|'main'|'motif'|'burst_sheet'|'loop_sheet'|'burst_frame'|'loop_frame';
   path: string; data: Buffer; sha256: string;
 };
-export type ScanResult = { manifest: any; assets: ScannedAsset[]; counts: Record<string,number>; allPngCount: number };
+export type ScanResult = { manifest: any; assets: ScannedAsset[]; counts: Record<string,number>; allPngCount: number; packType?: 'particle_v4'|'creative_v3' };
 const MAX_ENTRIES = 900;
 const MAX_UNCOMPRESSED = 120_000_000;
 const MAX_SINGLE_FILE = 12_000_000;
@@ -30,7 +30,7 @@ export function selectedForMode(kind:ScannedAsset['kind'],mode:'essential'|'fram
   if (mode === 'essential') return ['particle','burst_sheet','loop_sheet'].includes(kind);
   return ['particle','burst_frame','loop_frame'].includes(kind);
 }
-export async function scanESTZip(buffer: Buffer, mode:'essential'|'frames'|'all'): Promise<ScanResult> {
+export async function scanParticleZip(buffer: Buffer, mode:'essential'|'frames'|'all'): Promise<ScanResult> {
   return await new Promise((resolve,reject)=> {
     yauzl.fromBuffer(buffer,{lazyEntries:true,decodeStrings:true,validateEntrySizes:true}, (openError,zip)=> {
       if (openError || !zip) { reject(openError ?? new Error('Bad ZIP')); return; }
