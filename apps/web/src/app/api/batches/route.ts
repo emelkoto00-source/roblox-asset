@@ -7,7 +7,7 @@ export const dynamic='force-dynamic';
 export async function GET(request:Request){
   const deny=await guard(request);if(deny)return deny;
   const {rows}=await db().query(`SELECT b.*, (SELECT COUNT(*)::int FROM assets a WHERE a.batch_id=b.id) AS count,
-  (SELECT COUNT(*)::int FROM assets a WHERE a.batch_id=b.id AND a.status='created') AS created
+  (SELECT COUNT(*)::int FROM assets a WHERE a.batch_id=b.id AND a.status='created') AS created,
   (SELECT CASE WHEN EXISTS (SELECT 1 FROM assets a WHERE a.batch_id=b.id AND a.rel_path LIKE 'Name_Accents/%') THEN 'creative_v3' ELSE 'particle_v4' END) AS pack_type
   FROM batches b ORDER BY b.created_at DESC LIMIT 20`);
   return NextResponse.json({batches:rows});
