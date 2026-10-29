@@ -17,7 +17,8 @@
     "db:init": "tsx scripts/init-db.ts",
     "make:password": "node scripts/make-password.mjs",
     "test:artifact": "node --import tsx --test tests/artifact-frame-kinds.test.ts",
-    "test:manual": "node --import tsx --test tests/manual-assets.test.ts"
+    "test:manual": "node --import tsx --test tests/manual-assets.test.ts",
+    "test:lookup": "node --import tsx --test tests/asset-lookup.test.ts"
   },
   "devDependencies": {
     "tsx": "^4.20.0",
