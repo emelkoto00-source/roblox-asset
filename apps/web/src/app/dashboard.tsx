@@ -1,5 +1,5 @@
 'use client';
-import { useCallback,useEffect,useRef,useState,type ChangeEvent,type DragEvent } from 'react';
+import { useCallback,useEffect,useRef,useState,type DragEvent } from 'react';
 
 type View='upload'|'migration';
 type Owner='user'|'group';
@@ -7,6 +7,7 @@ type Selected={key:string;file:File;url:string};
 type RecordItem={id:string;batchId:string;name:string;path:string;sourceId:string|null;status:string;robloxId:string|null;error:string|null;owner:Owner;createdAt:string;batchStatus:string};
 type AssetDetail={batch:{id:string;filename:string;status:string;owner_type:Owner;owner_id:string};counts:Record<string,number>;total:number;assets:{id:string;rel_path:string;status:string;asset_id:string|null;error_text:string|null}[]};
 type History={assets:RecordItem[];batches:{id:string;count:number;created:number;pending:number;failed:number;workflow:View;owner:Owner;sourceId:string|null;createdAt:string}[]};
+type Lookup={id:string;source:string;status:string;name?:string|null;assetType?:string|null;creatorType?:string|null;creatorId?:string|null;description?:string|null;downloadable:boolean;downloadUrl?:string;explanation:string};
 const fmt=(n:number)=>n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(2)+' MB';
 const maxFiles=30;
 function statusName(value:string){
@@ -21,9 +22,9 @@ export default function Dashboard(){
   const [tab,setTab]=useState<View>('upload');
   const [owner,setOwner]=useState<Owner>('user');
   const [selected,setSelected]=useState<Selected[]>([]);
-  const [sourceFile,setSourceFile]=useState<Selected|null>(null);
   const [sourceId,setSourceId]=useState('');
-  const [rights,setRights]=useState('owned');
+  const [lookup,setLookup]=useState<Lookup|null>(null);
+  const [lookupBusy,setLookupBusy]=useState(false);
   const [confirmed,setConfirmed]=useState(false);
   const [active,setActive]=useState<string|null>(null);
   const [detail,setDetail]=useState<AssetDetail|null>(null);
@@ -34,7 +35,6 @@ export default function Dashboard(){
   const [drag,setDrag]=useState(false);
   const liveUrls=useRef<Set<string>>(new Set());
   const fileInput=useRef<HTMLInputElement|null>(null);
-  const migrationInput=useRef<HTMLInputElement|null>(null);
   const refresh=useCallback(async()=>{
     try{
       const res=await fetch('/api/manual',{cache:'no-store'});
@@ -61,32 +61,17 @@ export default function Dashboard(){
     setSelected(previous=>[...previous,...next]);
     setError('');setMessage('');
   }
-  function chooseMigration(e:ChangeEvent<HTMLInputElement>){
-    const file=e.target.files?.[0];
-    if(file){
-      if(!['image/png','image/jpeg','image/webp'].includes(file.type)||!file.size||file.size>8_000_000){
-        setError('Select a PNG, JPG or WebP image under 8 MB.');return;
-      }
-      if(sourceFile)releasePreview(sourceFile.url);
-      setSourceFile(makePreview(file));
-      setError('');
-    }
-    e.target.value='';
-  }
   function onDrop(e:DragEvent<HTMLDivElement>){
     e.preventDefault();setDrag(false);addFiles(e.dataTransfer.files);
   }
   async function stage(){
-    const files=tab==='upload'?selected.map(s=>s.file):sourceFile?[sourceFile.file]:[];
+    const files=selected.map(s=>s.file);
     if(!files.length){setError('Select an image first.');return;}
     if(!confirmed){setError('Confirm that you own or are authorized to publish the images.');return;}
-    if(tab==='migration'&&(!/^[0-9]{1,20}$/.test(sourceId)||rights==='none')){
-      setError('Enter a numeric asset ID and confirm ownership or republishing permission.');return;
-    }
     setBusy(true);setError('');setMessage('');
     try{
-      const form=new FormData();form.set('workflow',tab);form.set('owner',owner);
-      form.set('sourceId',sourceId.trim());form.set('rights',rights);form.set('confirmed','true');
+      const form=new FormData();form.set('workflow','upload');form.set('owner',owner);
+      form.set('confirmed','true');
       files.forEach(file=>form.append('files',file,file.name));
       const res=await fetch('/api/manual',{method:'POST',body:form});
       const data=await res.json();if(!res.ok)throw Error(data.error||'Unable to stage images');
@@ -95,6 +80,18 @@ export default function Dashboard(){
       setConfirmed(false);
     }catch(e){setError(e instanceof Error?e.message:String(e))}
     finally{setBusy(false);}
+  }
+  async function lookupId(){
+    if(!/^[0-9]{1,20}$/.test(sourceId.trim())){setError('Enter a numeric Roblox asset ID (up to 20 digits).');return;}
+    setLookupBusy(true);setError('');setLookup(null);
+    try{
+      const q=new URLSearchParams({id:sourceId.trim(),owner});
+      const res=await fetch('/api/asset-lookup?'+q.toString(),{cache:'no-store'});
+      const obj=await res.json();
+      if(!res.ok)throw Error(obj.error||'Could not look up Roblox asset');
+      setLookup(obj);
+    }catch(e){setError(e instanceof Error?e.message:String(e));}
+    finally{setLookupBusy(false);}
   }
   async function publish(mode:'test'|'start'){
     if(!active)return;
@@ -112,7 +109,7 @@ export default function Dashboard(){
   const created=detail?.counts.created||0,total=detail?.total||0;
   const progress=total?Math.round(100*created/total):0;
   const isStaged=detail?.assets?.some(a=>a.status==='staged')??false;
-  const sample=history.assets.filter(a=>tab==='migration'?!!a.sourceId:!a.sourceId);
+  const sample=history.assets.filter(a=>tab==='migration'?true:!a.sourceId);
   const totalCreated=history.assets.filter(a=>a.status==='created').length;
   const totalProcessing=history.assets.filter(a=>['processing','queued','submitting','staged'].includes(a.status)).length;
   const totalAttention=history.assets.filter(a=>['failed','needs_review'].includes(a.status)).length;
@@ -123,7 +120,7 @@ export default function Dashboard(){
       <div className="ma-brand"><span className="ma-logo">✧</span><div>EST <strong>ASSET CLOUD</strong><small>ROBLOX CREATOR TOOLS</small></div></div>
       <div className="ma-side-label">WORKSPACE</div>
       <button className={'ma-side-link '+(tab==='upload'?'ma-selected':'')} onClick={()=>setTab('upload')}>▣ <span>Bulk Image Upload</span></button>
-      <button className={'ma-side-link '+(tab==='migration'?'ma-selected':'')} onClick={()=>setTab('migration')}>⇄ <span>Asset ID Migration</span></button>
+      <button className={'ma-side-link '+(tab==='migration'?'ma-selected':'')} onClick={()=>setTab('migration')}>⌕ <span>Asset ID Lookup</span></button>
       <div className="ma-side-label ma-side-gap">LIBRARY</div>
       <button className="ma-side-link" onClick={()=>document.getElementById('asset-history')?.scrollIntoView({behavior:'smooth'})}>◈ <span>Asset Registry</span></button>
       <button className="ma-side-link" onClick={()=>{refresh();if(active)refreshActive(active)}}>◷ <span>Refresh Status</span></button>
@@ -135,7 +132,7 @@ export default function Dashboard(){
       <div className="ma-head"><div><div className="ma-eyebrow">YOUR ROBLOX ASSET WORKSPACE</div><h1>Asset management, <em>made simple.</em></h1><p>Upload custom images, publish under your Roblox creator, and organize every generated asset ID in one place.</p></div><span className="ma-cube">✦</span></div>
       <div className="ma-tabs" role="tablist" aria-label="Asset workflows">
         <button role="tab" aria-selected={tab==='upload'} className={tab==='upload'?'active':''} onClick={()=>{setTab('upload');setError('');}}>▣ &nbsp; Bulk Image Upload</button>
-        <button role="tab" aria-selected={tab==='migration'} className={tab==='migration'?'active':''} onClick={()=>{setTab('migration');setError('');}}>⇄ &nbsp; Asset ID Migration</button>
+        <button role="tab" aria-selected={tab==='migration'} className={tab==='migration'?'active':''} onClick={()=>{setTab('migration');setError('');}}>⌕ &nbsp; Asset ID Lookup & Download</button>
       </div>
       <div className="ma-metrics">
         <div><small>IMAGES TRACKED</small><strong>{history.assets.length}</strong><span>Latest 200 manual records</span></div>
@@ -165,29 +162,50 @@ export default function Dashboard(){
         </section>{publishPanel(active,detail,progress,total,created,isStaged,busy,publish)}</div>
       </div>:<div className="ma-grid">
         <section className="ma-panel">
-          <div className="ma-migration-hero"><span>⇄</span><div><strong>Move authorized images into your library</strong><p>Republish your original image under your chosen creator and keep an old-to-new ID mapping.</p></div></div>
-          <div className="ma-panel-head"><div><h2>Asset ID Migration</h2><p>For images you own or are authorized to republish.</p></div><span className="ma-chip">IMAGE ONLY</span></div>
-          <label className="ma-label" htmlFor="source-id">ORIGINAL ROBLOX ASSET ID</label><input className="ma-input" id="source-id" inputMode="numeric" placeholder="Paste the original Roblox asset ID" value={sourceId} onChange={e=>setSourceId(e.target.value.replace(/\s/g,''))}/>
-          <label className="ma-label" htmlFor="rights">REPUBLISHING RIGHTS</label><select className="ma-input" id="rights" value={rights} onChange={e=>setRights(e.target.value)}><option value="owned">I own this asset</option><option value="licensed">I have permission to republish it</option><option value="none">I do not have permission</option></select>
-          <div className="ma-label">ORIGINAL AUTHORIZED IMAGE FILE</div><input ref={migrationInput} hidden type="file" accept="image/png,image/jpeg,image/webp" onChange={chooseMigration}/>
-          <button className="ma-file-picker" onClick={()=>migrationInput.current?.click()}>{sourceFile?'✓ '+sourceFile.file.name:'⇧ Choose PNG, JPG, or WebP source file'}</button>
-          {sourceFile&&<div className="ma-source-preview"><img src={sourceFile.url} alt="Authorized source image preview"/><small>{fmt(sourceFile.file.size)}</small><button onClick={()=>{releasePreview(sourceFile.url);setSourceFile(null);}}>Remove</button></div>}
-          <div className="ma-info">ⓘ &nbsp; Pasting an asset ID alone does not grant access to its data. This workflow uses your original authorized image and records the old → new ID. It cannot extract restricted third-party animations or audio.</div>
-          <label className="ma-check"><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/> I confirm I have rights to republish this image.</label>
-          <button className="ma-cta" disabled={busy||!sourceFile||rights==='none'||!sourceId} onClick={stage}>{busy?'Preparing migration…':'Stage authorized migration'} &nbsp; →</button>
+          <div className="ma-migration-hero"><span>⌕</span><div><strong>Look up Roblox assets by ID</strong><p>Paste an ID to check its metadata and download a stored copy when you have access.</p></div></div>
+          <div className="ma-panel-head"><div><h2>Asset ID Lookup & Download</h2><p>No original file upload required to search.</p></div><span className="ma-chip">ID LOOKUP</span></div>
+          <label className="ma-label" htmlFor="source-id">ROBLOX ASSET ID</label>
+          <input className="ma-input" id="source-id" inputMode="numeric" placeholder="Paste a Roblox Asset ID (e.g. 123456789)" value={sourceId} onChange={e=>{setSourceId(e.target.value.trim());setLookup(null);}} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();lookupId();}}}/>
+          {ownerPicker(owner,value=>{setOwner(value);setLookup(null);})}
+          <button className="ma-cta ma-lookup-button" onClick={lookupId} disabled={lookupBusy||!sourceId.trim()}>{lookupBusy?'Looking up ID…':'Look up asset ID'} &nbsp; →</button>
+          <div className="ma-info">ⓘ &nbsp; Images, decals, animations, audio, models, and other asset IDs may be recognized where Roblox grants metadata access. Downloads are offered only for accessible stored source files. A pasted ID cannot unlock restricted Roblox assets.</div>
+          <div className="ma-label">WHAT YOU CAN DO</div>
+          <div className="ma-steps">
+            <div><b>01</b><span><strong>Find by Roblox ID</strong><small>No original file required for lookup</small></span></div>
+            <div><b>02</b><span><strong>Check asset details</strong><small>Creator, type, and access when available</small></span></div>
+            <div><b>03</b><span><strong>Download permitted stored files</strong><small>Existing EST image copies can be downloaded directly</small></span></div>
+            <div><b>04</b><span><strong>Upload your authorized file</strong><small>Use Bulk Image Upload to create your own new Roblox ID</small></span></div>
+          </div>
         </section>
         <div className="ma-right">
-          <section className="ma-panel"><div className="ma-panel-head"><div><h2>Migration workflow</h2><p>Original source first, new ID second.</p></div><span className="ma-chip">4 STEPS</span></div>
-            <div className="ma-steps"><div><b>01</b><span><strong>Enter source ID</strong><small>Record which asset you're replacing</small></span></div><div><b>02</b><span><strong>Supply permitted image</strong><small>Original file + republishing rights</small></span></div><div><b>03</b><span><strong>Publish under your creator</strong><small>Roblox creates a separate asset ID</small></span></div><div><b>04</b><span><strong>Export the mapping</strong><small>Replace IDs in your game where authorized</small></span></div></div>
-          </section>{publishPanel(active,detail,progress,total,created,isStaged,busy,publish)}
+          <section className="ma-panel"><div className="ma-panel-head"><div><h2>Asset details</h2><p>Actual lookup results, not sample data.</p></div><span className="ma-chip">ROBLOX / EST</span></div>
+            {lookup?<div className="ma-lookup-result">
+              <div className="ma-lookup-id"><span>ASSET ID</span><strong>{lookup.id}</strong></div>
+              <dl>
+                <div><dt>File name</dt><dd>{lookup.name||'Not provided'}</dd></div>
+                <div><dt>Asset type</dt><dd>{lookup.assetType||'Unknown'}</dd></div>
+                <div><dt>Creator</dt><dd>{lookup.creatorType&&lookup.creatorId?lookup.creatorType+' · '+lookup.creatorId:'Not provided'}</dd></div>
+                <div><dt>Source</dt><dd>{lookup.source==='est-library'?'Your EST storage':'Roblox metadata API'}</dd></div>
+                <div><dt>Download</dt><dd>{lookup.downloadable?'Stored image available':'Not available'}</dd></div>
+              </dl>
+              <p className="ma-lookup-note">{lookup.explanation}</p>
+              {lookup.downloadable&&lookup.downloadUrl&&<a className="ma-cta ma-download-cta" href={lookup.downloadUrl}>↓ Download stored PNG</a>}
+              <div className="ma-actions"><button className="ma-secondary" onClick={()=>navigator.clipboard.writeText('rbxassetid://'+lookup.id)}>Copy rbxassetid://</button>
+              {lookup.downloadable&&<button className="ma-secondary" onClick={()=>setTab('upload')}>Go to Bulk Upload →</button>}</div>
+            </div>:<div className="ma-control-empty">⌕<strong>No asset looked up</strong><span>Enter an ID and choose its creator to check available information and downloads.</span></div>}
+          </section>
+          <section className="ma-panel"><div className="ma-panel-head"><div><h2>How access works</h2><p>Availability depends on Roblox creator permissions.</p></div></div>
+            <div className="ma-info">Your previously uploaded EST image assets can be downloaded as PNG using only their Roblox ID. For other IDs, Roblox may return metadata, deny access, or provide no file through this integration.</div>
+            <p className="ma-fine">A new Roblox asset ID can be created by uploading an authorized file. Roblox moderation is separate from successful asset creation.</p>
+          </section>
         </div>
-      </div>}
+      </div>
       {(error||message)&&<div role="status" className={'ma-alert '+(error?'bad':'good')}>{error||message}</div>}
-      <section className="ma-panel ma-history" id="asset-history"><div className="ma-panel-head"><div><h2>{tab==='migration'?'Authorized ID mapping history':'Asset Registry'}</h2><p>Actual Roblox create results from your account; never sample IDs.</p></div><div className="ma-actions"><button className="ma-secondary" onClick={refresh}>↻ Refresh</button>{active&&<a className="ma-secondary" href={'/api/batches/'+active+'/export?format=csv'}>↓ Export batch CSV</a>}</div></div>
+      <section className="ma-panel ma-history" id="asset-history"><div className="ma-panel-head"><div><h2>{tab==='migration'?'Stored asset registry':'Asset Registry'}</h2><p>Real stored Roblox asset IDs. Use Lookup to download eligible files.</p></div><div className="ma-actions"><button className="ma-secondary" onClick={refresh}>↻ Refresh</button>{active&&<a className="ma-secondary" href={'/api/batches/'+active+'/export?format=csv'}>↓ Export batch CSV</a>}</div></div>
         <div className="ma-table-scroll"><table><thead><tr><th>ASSET / SOURCE</th><th>ROBLOX ASSET ID</th><th>STATUS</th><th>OWNER</th><th></th></tr></thead><tbody>
           {sample.slice(0,100).map(a=><tr key={a.id}><td><b>{a.name}.png</b>{a.sourceId&&<small>Original: {a.sourceId}</small>}<small>{formatDate(a.createdAt)}</small></td>
             <td className="ma-id">{a.robloxId||'—'}</td><td><span className={'ma-status '+(a.status==='created'?'created':['failed','needs_review'].includes(a.status)?'failed':'waiting')}>{statusName(a.status)}</span>{a.error&&<small title={a.error}>{a.error.slice(0,90)}</small>}</td>
-            <td>{a.owner==='group'?'Group':'Personal'}</td><td>{a.robloxId&&<button className="ma-secondary" onClick={()=>navigator.clipboard.writeText(a.robloxId!)}>Copy ID</button>}</td></tr>)}
+            <td>{a.owner==='group'?'Group':'Personal'}</td><td>{a.robloxId&&<div className="ma-actions"><button className="ma-secondary" onClick={()=>navigator.clipboard.writeText(a.robloxId!)}>Copy ID</button><button className="ma-secondary" onClick={()=>{setSourceId(a.robloxId!);setOwner(a.owner);setTab('migration');setLookup(null);window.scrollTo({top:0,behavior:'smooth'});}}>Lookup</button></div>}</td></tr>)}
           {!sample.length&&<tr><td colSpan={5} className="ma-no-records">No records yet in this view. Stage and publish an image to generate a new asset ID.</td></tr>}
         </tbody></table></div><p className="ma-fine">Created means Roblox returned an ID. Moderation approval is not verified by this dashboard.</p>
       </section>
