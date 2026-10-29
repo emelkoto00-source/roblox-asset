@@ -32,6 +32,7 @@ export default function Dashboard(){
   const [message,setMessage]=useState('');
   const [error,setError]=useState('');
   const [drag,setDrag]=useState(false);
+  const liveUrls=useRef<Set<string>>(new Set());
   const fileInput=useRef<HTMLInputElement|null>(null);
   const migrationInput=useRef<HTMLInputElement|null>(null);
   const refresh=useCallback(async()=>{
@@ -46,8 +47,9 @@ export default function Dashboard(){
   useEffect(()=>{refresh();},[refresh]);
   useEffect(()=>{if(!active)return;refreshActive(active);},[active,refreshActive]);
   useEffect(()=>{const timer=setInterval(()=>{refresh();if(active)refreshActive(active);},5000);return()=>clearInterval(timer)},[active,refresh,refreshActive]);
-  useEffect(()=>()=>{selected.forEach(s=>URL.revokeObjectURL(s.url));},[selected]);
-  useEffect(()=>()=>{if(sourceFile)URL.revokeObjectURL(sourceFile.url);},[sourceFile]);
+  useEffect(()=>{const urls=liveUrls.current;return()=>{urls.forEach(url=>URL.revokeObjectURL(url));};},[]);
+  function makePreview(file:File):Selected{const url=URL.createObjectURL(file);liveUrls.current.add(url);return {key:crypto.randomUUID(),file,url};}
+  function releasePreview(url:string){URL.revokeObjectURL(url);liveUrls.current.delete(url);}
 
   function addFiles(incoming:FileList|File[]){
     const raw=Array.from(incoming);
@@ -55,7 +57,7 @@ export default function Dashboard(){
     if(ok.length!==raw.length){setError('Only PNG, JPG, or WebP image files are accepted.');return;}
     if(selected.length+ok.length>maxFiles){setError('Select no more than 30 images per batch.');return;}
     if(ok.some(f=>f.size===0||f.size>8_000_000)){setError('Each image must be nonempty and 8 MB or smaller.');return;}
-    const next=ok.map(file=>({key:crypto.randomUUID(),file,url:URL.createObjectURL(file)}));
+    const next=ok.map(file=>makePreview(file));
     setSelected(previous=>[...previous,...next]);
     setError('');setMessage('');
   }
@@ -65,7 +67,8 @@ export default function Dashboard(){
       if(!['image/png','image/jpeg','image/webp'].includes(file.type)||!file.size||file.size>8_000_000){
         setError('Select a PNG, JPG or WebP image under 8 MB.');return;
       }
-      setSourceFile({key:crypto.randomUUID(),file,url:URL.createObjectURL(file)});
+      if(sourceFile)releasePreview(sourceFile.url);
+      setSourceFile(makePreview(file));
       setError('');
     }
     e.target.value='';
@@ -146,10 +149,10 @@ export default function Dashboard(){
             <input ref={fileInput} hidden type="file" accept="image/png,image/jpeg,image/webp" multiple onChange={e=>{if(e.target.files)addFiles(e.target.files);e.target.value=''}}/>
             <div className="ma-drop-icon">⇧</div><strong>Drag & drop your images here</strong><p>or click to browse your device</p><span>PNG · JPG · WEBP &nbsp; / &nbsp; up to 30 files, 8 MB each</span>
           </div>
-          <div className="ma-files-head"><strong>Selected images ({selected.length})</strong><button onClick={()=>setSelected([])} disabled={!selected.length} className="ma-plain">Clear all</button></div>
+          <div className="ma-files-head"><strong>Selected images ({selected.length})</strong><button onClick={()=>{selected.forEach(s=>releasePreview(s.url));setSelected([]);}} disabled={!selected.length} className="ma-plain">Clear all</button></div>
           <div className="ma-files">{selected.length?selected.map(x=><div key={x.key} className="ma-file">
             <img src={x.url} alt={'Preview of '+x.file.name}/><div className="ma-file-info"><b title={x.file.name}>{x.file.name}</b><small>{fmt(x.file.size)} · ready to stage</small></div><span className="ma-ready">READY</span>
-            <button aria-label={'Remove '+x.file.name} onClick={()=>setSelected(list=>list.filter(y=>y.key!==x.key))}>×</button>
+            <button aria-label={'Remove '+x.file.name} onClick={()=>{releasePreview(x.url);setSelected(list=>list.filter(y=>y.key!==x.key));}}>×</button>
           </div>):<div className="ma-empty-small">No images selected yet. Add photos above to get started.</div>}</div>
         </section>
         <div className="ma-right"><section className="ma-panel"><div className="ma-panel-head"><div><h2>Publishing settings</h2><p>Choose where your assets will be created.</p></div><span className="ma-chip">OPEN CLOUD</span></div>
@@ -168,7 +171,7 @@ export default function Dashboard(){
           <label className="ma-label" htmlFor="rights">REPUBLISHING RIGHTS</label><select className="ma-input" id="rights" value={rights} onChange={e=>setRights(e.target.value)}><option value="owned">I own this asset</option><option value="licensed">I have permission to republish it</option><option value="none">I do not have permission</option></select>
           <div className="ma-label">ORIGINAL AUTHORIZED IMAGE FILE</div><input ref={migrationInput} hidden type="file" accept="image/png,image/jpeg,image/webp" onChange={chooseMigration}/>
           <button className="ma-file-picker" onClick={()=>migrationInput.current?.click()}>{sourceFile?'✓ '+sourceFile.file.name:'⇧ Choose PNG, JPG, or WebP source file'}</button>
-          {sourceFile&&<div className="ma-source-preview"><img src={sourceFile.url} alt="Authorized source image preview"/><small>{fmt(sourceFile.file.size)}</small><button onClick={()=>setSourceFile(null)}>Remove</button></div>}
+          {sourceFile&&<div className="ma-source-preview"><img src={sourceFile.url} alt="Authorized source image preview"/><small>{fmt(sourceFile.file.size)}</small><button onClick={()=>{releasePreview(sourceFile.url);setSourceFile(null);}}>Remove</button></div>}
           <div className="ma-info">ⓘ &nbsp; Pasting an asset ID alone does not grant access to its data. This workflow uses your original authorized image and records the old → new ID. It cannot extract restricted third-party animations or audio.</div>
           <label className="ma-check"><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/> I confirm I have rights to republish this image.</label>
           <button className="ma-cta" disabled={busy||!sourceFile||rights==='none'||!sourceId} onClick={stage}>{busy?'Preparing migration…':'Stage authorized migration'} &nbsp; →</button>
