@@ -15,4 +15,5 @@ jobs:
       - run: npm install
       - run: npm run test:artifact
       - run: npm run test:manual
+      - run: npm run test:lookup
       - run: npm run build
