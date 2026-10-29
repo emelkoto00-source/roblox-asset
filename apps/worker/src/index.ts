@@ -22,8 +22,9 @@ async function upload(id:string){
   try{
     const png=await loadPNG(asset.storage_key);
     // Only image bytes and a safe display name are sent to Roblox. Never include our secrets in metadata.
-    const name=`EST_${asset.effect.replace(/\W+/g,'_')}_${asset.rel_path.split('/').pop()!.replace(/\.png$/i,'')}`.slice(0,50);
-    const result=await publishImage(png,name,owner);
+    const manual=asset.kind==='manual_image'||asset.kind==='authorized_image_migration';
+    const name=manual?String(asset.effect).slice(0,50):`EST_${asset.effect.replace(/\W+/g,'_')}_${asset.rel_path.split('/').pop()!.replace(/\.png$/i,'')}`.slice(0,50);
+    const result=await publishImage(png,name,owner,manual?'Uploaded with EST Roblox Asset Cloud':undefined);
     const op=parseOperationRef(result),created=parseCreatedId(result);
     if(created){await db().query(`UPDATE assets SET status='created',asset_id=$1 WHERE id=$2`,[created,id]);}
     else if(op){await db().query(`UPDATE assets SET status='processing',operation_ref=$1 WHERE id=$2`,[op,id]);await enqueuePoll(id);}

@@ -1,13 +1,13 @@
 import { creatorSettings, Ownership } from './config';
 export class RobloxHttpError extends Error { constructor(public code:number,message:string){ super(message); } }
 function cleanMessage(v:string){return v.slice(0,600).replace(/([a-zA-Z0-9_-]{30,})/g,'[redacted]')}
-export async function publishImage(file:Buffer, name:string, ownerType:Ownership) {
+export async function publishImage(file:Buffer, name:string, ownerType:Ownership, description?:string) {
   const {ownerId,apiKey}=creatorSettings(ownerType);
   const creator=ownerType==='user'?{userId:ownerId}:{groupId:ownerId};
-  const request={assetType:process.env.ROBLOX_ASSET_TYPE||'Decal',displayName:name.slice(0,50),description:'EST V4 Cinematic Particle Collection',creationContext:{creator}};
+  const request={assetType:process.env.ROBLOX_ASSET_TYPE||'Decal',displayName:name.slice(0,50),description:(description||'EST V4 Cinematic Particle Collection').slice(0,1000),creationContext:{creator}};
   const form=new FormData();
   form.set('request',JSON.stringify(request));
-  form.set('fileContent',new Blob([new Uint8Array(file)],{type:'image/png'}),'particle.png');
+  form.set('fileContent',new Blob([new Uint8Array(file)],{type:'image/png'}),'asset.png');
   // IMPORTANT: current endpoint/payload and creator permissions must be verified against the live Roblox Open Cloud docs.
   const res=await fetch(process.env.ROBLOX_CREATE_ASSET_URL||'https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':apiKey},body:form,signal:AbortSignal.timeout(60_000)});
   const body=await res.text();

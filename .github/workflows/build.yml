@@ -14,4 +14,5 @@ jobs:
           node-version: '22'
       - run: npm install
       - run: npm run test:artifact
+      - run: npm run test:manual
       - run: npm run build
