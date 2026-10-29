@@ -199,7 +199,7 @@ export default function Dashboard(){
             <p className="ma-fine">A new Roblox asset ID can be created by uploading an authorized file. Roblox moderation is separate from successful asset creation.</p>
           </section>
         </div>
-      </div>
+      </div>}
       {(error||message)&&<div role="status" className={'ma-alert '+(error?'bad':'good')}>{error||message}</div>}
       <section className="ma-panel ma-history" id="asset-history"><div className="ma-panel-head"><div><h2>{tab==='migration'?'Stored asset registry':'Asset Registry'}</h2><p>Real stored Roblox asset IDs. Use Lookup to download eligible files.</p></div><div className="ma-actions"><button className="ma-secondary" onClick={refresh}>↻ Refresh</button>{active&&<a className="ma-secondary" href={'/api/batches/'+active+'/export?format=csv'}>↓ Export batch CSV</a>}</div></div>
         <div className="ma-table-scroll"><table><thead><tr><th>ASSET / SOURCE</th><th>ROBLOX ASSET ID</th><th>STATUS</th><th>OWNER</th><th></th></tr></thead><tbody>
